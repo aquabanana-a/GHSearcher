@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import androidx.room.Room;
 import com.dobranos.ghsearcher.model.data.db.Db;
 import com.dobranos.ghsearcher.model.logic.db.DbServiceProvider;
+import com.dobranos.ghsearcher.model.logic.gitHub.GitHubService;
 import com.dobranos.ghsearcher.model.logic.gitHub.GitHubServiceProvider;
 import dagger.Module;
 import dagger.Provides;
@@ -33,6 +34,13 @@ public class DiAppModule
     Db provideDatabase()
     {
         return Room.databaseBuilder(appContext, Db.class, "database").build();
+    }
+
+    @Singleton
+    @Provides
+    GitHubService provideGitHubApi()
+    {
+        return new GitHubService();
     }
 
     @Singleton

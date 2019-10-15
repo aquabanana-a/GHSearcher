@@ -4,6 +4,7 @@ import com.dobranos.ghsearcher.di.module.DiActMainModule;
 import com.dobranos.ghsearcher.di.module.DiAppModule;
 import com.dobranos.ghsearcher.model.logic.db.DbBookmarkProvider;
 import com.dobranos.ghsearcher.model.logic.db.DbServiceProvider;
+import com.dobranos.ghsearcher.model.logic.gitHub.GitHubServiceProvider;
 import com.dobranos.ghsearcher.ui.activity.actMain.ActMain;
 import com.dobranos.ghsearcher.ui.fragment.fgSearchResults.FgSearchResults;
 import com.dobranos.ghsearcher.ui.fragment.fgUser.FgUser;
@@ -18,6 +19,7 @@ public interface SingletonComponent
     DiActMainComponent newComponent(DiActMainModule a);
 
     void inject(DbServiceProvider value);
+    void inject(GitHubServiceProvider value);
     void inject(DbBookmarkProvider value);
 
     void inject(ActMain value);

@@ -1,5 +1,6 @@
 package com.dobranos.ghsearcher.model.logic.gitHub;
 
+import com.dobranos.ghsearcher.di.Injector;
 import com.dobranos.ghsearcher.model.data.common.IRepository;
 import com.dobranos.ghsearcher.model.data.common.IServiceProvider;
 import com.dobranos.ghsearcher.model.data.common.IUser;
@@ -11,12 +12,21 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class GitHubServiceProvider implements IServiceProvider
 {
+    @Inject GitHubService api;
+
+    public GitHubServiceProvider()
+    {
+        Injector.getSingletonComponent()
+            .inject(this);
+    }
+
     private HashMap<String, List<IUser>> searchMemCache = new HashMap<>();
     private Observable<List<IUser>> getSearchMemCache(String query, long page, long pageSize)
     {
@@ -41,7 +51,7 @@ public class GitHubServiceProvider implements IServiceProvider
 
     public Observable<List<IUser>> searchUsersImpl(final String query, final long page, final long pageSize)
     {
-        return GitHubService.getInstance().getSearchApi()
+        return api.getSearchApi()
             .searchUsers(query, GitHubSearchApi.SORT_DEFAULT, GitHubSearchApi.ORDER_DEFAULT, page, pageSize)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
@@ -82,7 +92,7 @@ public class GitHubServiceProvider implements IServiceProvider
 
     private Observable<IUser> getUserImpl(final String login)
     {
-        return GitHubService.getInstance().getUsersApi()
+        return api.getUsersApi()
             .getUser(login)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
@@ -123,7 +133,7 @@ public class GitHubServiceProvider implements IServiceProvider
         final List<IRepository> cacheBuffer = new ArrayList<>();
         final Pager pager = p;
 
-        return GitHubService.getInstance().getRepositoriesApi()
+        return api.getRepositoriesApi()
             .getUserRepositories(login, GitHubRepositoriesApi.TYPE_DEFAULT, GitHubRepositoriesApi.SORT_UPDATED, GitHubRepositoriesApi.DIRECTION_DESC, pager.page, GitHubRepositoriesApi.PAGE_SIZE_MAX)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())

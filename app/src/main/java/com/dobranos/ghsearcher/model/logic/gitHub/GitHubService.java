@@ -13,15 +13,7 @@ public class GitHubService
 
     private Retrofit provider;
 
-    private static GitHubService instance;
-    public static GitHubService getInstance()
-    {
-        if(instance == null)
-            instance = new GitHubService();
-        return instance;
-    }
-
-    private GitHubService()
+    public GitHubService()
     {
         provider = new Retrofit.Builder()
             .baseUrl(BASE_URL)
