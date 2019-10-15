@@ -20,50 +20,49 @@ public class DbBookmarkProvider
     @Inject Db database;
 
     private List<Long> knownUserIds = new ArrayList<>();
+    private Object knownUserIdsLo = new Object();
+
+    public List<Long> getKnownUserIds() { synchronized (knownUserIdsLo) { return new ArrayList<>(knownUserIds); }}
 
     public DbBookmarkProvider()
     {
         Injector.getSingletonComponent()
             .inject(this);
-    }
 
-    private static DbBookmarkProvider instance;
-    public static DbBookmarkProvider getInstance()
-    {
-        if(instance == null)
-        {
-            instance = new DbBookmarkProvider();
-
-            instance.database.getUserDao().getIdsAll()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<List<Long>>()
+        database.getUserDao().getIdsAll()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Consumer<List<Long>>()
+            {
+                @Override
+                public void accept(List<Long> notes) throws Exception
                 {
-                    @Override
-                    public void accept(List<Long> notes) throws Exception
+                    synchronized (knownUserIdsLo)
                     {
-                        instance.knownUserIds = notes;
+                        knownUserIds = notes;
                     }
-                });
-        }
-        return instance;
+                }
+            });
     }
 
     public boolean isKnownUser(IUser user)  { return isKnownUser(user.getId()); }
-    public boolean isKnownUser(long userId) { return knownUserIds.contains(userId); }
+    public boolean isKnownUser(long userId) { synchronized (knownUserIdsLo) { return knownUserIds.contains(userId); } }
 
     public Completable rememberUser(final IUser user, final List<IRepository> repos)
     {
         return Completable
             .fromAction(() ->
             {
-                database.getUserDao().insert(new DbUser(user));
+                synchronized (knownUserIdsLo)
+                {
+                    List<DbRepository> dr = new ArrayList<>();
+                    for (IRepository r : repos)
+                        dr.add(new DbRepository(r, user.getLogin()));
 
-                List<DbRepository> dr = new ArrayList<>();
-                for (IRepository r : repos)
-                    dr.add(new DbRepository(r, user.getLogin()));
-
-                database.getRepositoryDao().insert(dr);
+                    database.getUserDao().insert(new DbUser(user));
+                    database.getRepositoryDao().insert(dr);
+                    knownUserIds.add(user.getId());
+                }
             })
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io());
@@ -75,8 +74,11 @@ public class DbBookmarkProvider
         return Completable
             .fromAction(() ->
             {
-                database.getUserDao().delete(userId);
-                knownUserIds.remove(userId);
+                synchronized (knownUserIdsLo)
+                {
+                    database.getUserDao().delete(userId);
+                    knownUserIds.remove(userId);
+                }
             })
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io());

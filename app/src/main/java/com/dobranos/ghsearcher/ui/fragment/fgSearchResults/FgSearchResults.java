@@ -11,6 +11,7 @@ import com.dobranos.ghsearcher.R;
 import com.dobranos.ghsearcher.di.module.DiActMainModule;
 import com.dobranos.ghsearcher.model.data.common.IServiceProvider;
 import com.dobranos.ghsearcher.model.data.common.IUser;
+import com.dobranos.ghsearcher.model.logic.db.DbBookmarkProvider;
 import com.dobranos.ghsearcher.model.logic.db.DbServiceProvider;
 import com.dobranos.ghsearcher.model.logic.gitHub.GitHubServiceProvider;
 import com.dobranos.ghsearcher.ui.common.InfiniteScrollListener;
@@ -30,6 +31,7 @@ public class FgSearchResults extends FgBase
 
     @Inject GitHubServiceProvider networkProvider;
     @Inject DbServiceProvider storageProvider;
+    @Inject DbBookmarkProvider bookmarkProvider;
 
     private IServiceProvider getServiceProvider() { return useStorage ? storageProvider : networkProvider; }
 
@@ -54,6 +56,9 @@ public class FgSearchResults extends FgBase
         context.setTitle(isBookmarks ? R.string.fg_search_results_bookmarks : R.string.common_empty);
         setHasOptionsMenu(true);
         setBackArrowInsteadHamburger(isBookmarks ? true : false);
+
+        if(isBookmarks)
+            recyclerViewAdapter.invalidateBy(bookmarkProvider.getKnownUserIds());
     }
 
     @Override

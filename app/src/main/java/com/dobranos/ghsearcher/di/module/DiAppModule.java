@@ -4,6 +4,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.room.Room;
 import com.dobranos.ghsearcher.model.data.db.Db;
+import com.dobranos.ghsearcher.model.logic.db.DbBookmarkProvider;
 import com.dobranos.ghsearcher.model.logic.db.DbServiceProvider;
 import com.dobranos.ghsearcher.model.logic.gitHub.GitHubService;
 import com.dobranos.ghsearcher.model.logic.gitHub.GitHubServiceProvider;
@@ -42,6 +43,10 @@ public class DiAppModule
     {
         return new GitHubService();
     }
+
+    @Singleton
+    @Provides
+    DbBookmarkProvider provideBookmarkService() { return new DbBookmarkProvider(); }
 
     @Singleton
     @Provides

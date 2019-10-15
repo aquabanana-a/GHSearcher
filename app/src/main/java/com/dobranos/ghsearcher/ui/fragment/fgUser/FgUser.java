@@ -35,6 +35,7 @@ public class FgUser extends FgBase
     @Inject DiActMainModule.Menu menu;
     @Inject DiActMainModule.Behavior behavior;
 
+    @Inject DbBookmarkProvider bookmarkProvider;
     @Inject GitHubServiceProvider networkProvider;
     @Inject DbServiceProvider storageProvider;
     private IServiceProvider getServiceProvider() { return useStorage ? storageProvider : networkProvider; }
@@ -155,8 +156,8 @@ public class FgUser extends FgBase
 
                             ivBookmark.startAnimation(AnimationUtils.loadAnimation(ivBookmark.getContext(), R.anim.milkshake));
 
-                            if (!DbBookmarkProvider.getInstance().isKnownUser(user))
-                                DbBookmarkProvider.getInstance().rememberUser(user, recyclerViewAdapter.getData()).subscribe(new CompletableObserver()
+                            if (!bookmarkProvider.isKnownUser(user))
+                                bookmarkProvider.rememberUser(user, recyclerViewAdapter.getData()).subscribe(new CompletableObserver()
                                 {
                                     @Override
                                     public void onSubscribe(Disposable d) { }
@@ -168,7 +169,7 @@ public class FgUser extends FgBase
                                     public void onError(Throwable e) { Toast.makeText(getActivity(), R.string.fg_user_bookmark_add_fault, Toast.LENGTH_LONG).show(); }
                                 });
                             else
-                                DbBookmarkProvider.getInstance().removeUser(user).subscribe(new CompletableObserver()
+                                bookmarkProvider.removeUser(user).subscribe(new CompletableObserver()
                                 {
                                     @Override
                                     public void onSubscribe(Disposable d) { }
@@ -231,7 +232,7 @@ public class FgUser extends FgBase
 
     private void refreshBookmarkAndInvalidate()
     {
-        bookmarked = DbBookmarkProvider.getInstance().isKnownUser(user);
+        bookmarked = bookmarkProvider.isKnownUser(user);
         refreshBookmark();
     }
 

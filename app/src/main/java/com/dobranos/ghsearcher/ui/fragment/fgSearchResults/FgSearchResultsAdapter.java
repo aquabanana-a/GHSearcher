@@ -24,6 +24,7 @@ public class FgSearchResultsAdapter extends RecyclerView.Adapter<FgSearchResults
 
     private IServiceProvider serviceProvider;
     private ArrayList<IUser> dataProvider;
+    private Object dataProviderLo = new Object();
     private int layoutResourceId;
 
     public FgSearchResultsAdapter(FragmentActivity holder, int layoutResourceId, IServiceProvider provider)
@@ -35,11 +36,36 @@ public class FgSearchResultsAdapter extends RecyclerView.Adapter<FgSearchResults
         this.dataProvider = new ArrayList<>();
     }
 
+    public FgSearchResultsAdapter invalidateBy(List<Long> userIds)
+    {
+        for(IUser u : new ArrayList<>(dataProvider))
+            if(!userIds.contains(u.getId()))
+                removeItem(u.getId());
+        return this;
+    }
+
+    public FgSearchResultsAdapter removeItem(long userId)
+    {
+        synchronized (dataProviderLo)
+        {
+            int idx = getItemIndex(userId);
+            if(idx < 0)
+                return this;
+
+            dataProvider.remove(idx);
+            notifyItemRemoved(idx);
+            return this;
+        }
+    }
+
     public FgSearchResultsAdapter addData(List<IUser> value)
     {
-        dataProvider.addAll(value);
-        notifyDataSetChanged();
-        return this;
+        synchronized (dataProviderLo)
+        {
+            dataProvider.addAll(value);
+            notifyDataSetChanged();
+            return this;
+        }
     }
 
     @Override
@@ -65,6 +91,17 @@ public class FgSearchResultsAdapter extends RecyclerView.Adapter<FgSearchResults
     private IUser getItem(int i)
     {
         return dataProvider.get(i);
+    }
+
+    private int getItemIndex(long userId)
+    {
+        synchronized (dataProviderLo)
+        {
+            for (int i = 0; i < dataProvider.size(); i++)
+                if (dataProvider.get(i).getId() == userId)
+                    return i;
+            return -1;
+        }
     }
 
     class ViewHolder extends RecyclerView.ViewHolder
