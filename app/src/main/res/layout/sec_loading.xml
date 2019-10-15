@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+       xmlns:app="http://schemas.android.com/apk/res-auto"
+       android:fitsSystemWindows="true">
+
+    <!--<FrameLayout android:id="@+id/fg_container"-->
+                 <!--android:layout_width="match_parent"-->
+                 <!--android:layout_height="match_parent"/>-->
+
+    <RelativeLayout android:id="@+id/v_loading"
+                    android:fitsSystemWindows="true"
+                    android:background="@color/bg_loading"
+                    android:visibility="gone"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+        <com.pnikosis.materialishprogress.ProgressWheel android:id="@+id/progress_wheel"
+                                                        android:layout_width="?attr/actionBarSize"
+                                                        android:layout_height="?attr/actionBarSize"
+                                                        android:layout_centerInParent="true"
+                                                        app:matProg_barColor="@android:color/white"
+                                                        app:matProg_progressIndeterminate="true"/>
+
+        <TextView android:id="@+id/tv_loading"
+                  android:textSize="18sp"
+                  android:textColor="@android:color/white"
+                  android:text="@string/common_loading"
+                  android:gravity="center"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:layout_below="@id/progress_wheel"
+                  android:layout_centerHorizontal="true"/>
+
+    </RelativeLayout>
+
+    <View android:background="@drawable/bg_shadow_top_bar"
+          android:layout_width="match_parent"
+          android:layout_height="3dp"/>
+
+</merge>

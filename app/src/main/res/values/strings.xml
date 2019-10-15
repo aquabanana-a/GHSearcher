@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">GHSearcher</string>
+
+    <string name="am_search_hint">Search users</string>
+
+    <string name="common_empty"></string>
+    <string name="common_ok">Ok</string>
+    <string name="common_loading">Loading…</string>
+    <string name="common_connection_fault">Check your network connection settings</string>
+    <string name="common_connection_retry">Retry</string>
+    <string name="common_exit">To exit, click Back again</string>
+
+    <string name="nav_open">Open menu</string>
+    <string name="nav_close">Close menu</string>
+
+    <string name="menu_search">Search</string>
+    <string name="menu_bookmarks">Bookmarks</string>
+
+    <string name="fg_search_results_bookmarks">Bookmarks</string>
+    <string name="fg_search_results_empty">Nothing to show</string>
+
+    <string name="fg_user_repos_empty">User have no repositories yet</string>
+    <string name="fg_user_bookmark_add_success">Bookmark added</string>
+    <string name="fg_user_bookmark_add_fault">Can not add bookmark at this time :(</string>
+    <string name="fg_user_bookmark_remove_success">Removed from bookmarks</string>
+    <string name="fg_user_bookmark_remove_fault">Can not remove bookmark at this time :(</string>
+
+    <string name="error_http_common">Remote host error, try again later</string>
+    <string name="error_http_forbidden">Remote host error - you can make only 10 connections per minute, try again later</string>
+    <string name="error_time_out">Connection timed out, try again later</string>
+    <string name="error_network">Network error, check connection settings</string>
+    <string name="error_unknown">Unknown error</string>
+
+</resources>

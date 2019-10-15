@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable name="vd" type="com.dobranos.ghsearcher.ui.activity.ActBase.ViewData"/>
+    </data>
+
+    <androidx.drawerlayout.widget.DrawerLayout xmlns:tools="http://schemas.android.com/tools"
+                                               android:layout_width="match_parent"
+                                               android:layout_height="match_parent"
+                                               android:fitsSystemWindows="true"
+                                               android:id="@+id/act_main"
+                                               android:padding="0dp"
+                                               tools:openDrawer="start">
+
+        <RelativeLayout android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+            <androidx.coordinatorlayout.widget.CoordinatorLayout android:id="@+id/coordinator"
+                                                                 android:layout_width="match_parent"
+                                                                 android:layout_height="match_parent">
+
+                <include layout="@layout/sec_toolbar"/>
+
+                <FrameLayout android:id="@+id/fg_holder"
+                             android:layout_width="match_parent"
+                             android:layout_height="match_parent"
+                             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+            </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+            <include layout="@layout/sec_loading"/>
+
+        </RelativeLayout>
+
+        <include layout="@layout/sec_navigation"/>
+
+    </androidx.drawerlayout.widget.DrawerLayout>
+
+</layout>
