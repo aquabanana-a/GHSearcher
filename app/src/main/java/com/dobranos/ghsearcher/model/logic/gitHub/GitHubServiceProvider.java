@@ -104,42 +104,30 @@ public class GitHubServiceProvider implements IServiceProvider
     }
 
     private HashMap<String, List<IRepository>> repoMemCache = new HashMap<>();
-    private Observable<List<IRepository>> getRepoMemCache(String login)
-    {
-        return Observable.create(subscriber ->
-        {
-            List<IRepository> l = repoMemCache.get(login);
-            if(l != null)
-                subscriber.onNext(l);
-            subscriber.onComplete();
-        });
-    }
 
     public Observable<List<IRepository>> getUserRepositories(final String login)
     {
-        return Observable.concat(getRepoMemCache(login), getUserRepositoriesImpl(login))
-            .filter(repos -> repos != null)
-            .take(1);
+        List<IRepository> cache = repoMemCache.get(login);
+        if(cache != null && cache.size() > 0)
+            return Observable.just(cache);
+
+        return getUserRepositoriesImpl(login);
     }
 
-    public Observable<List<IRepository>> getUserRepositoriesImpl(final String login)
+    private Observable<List<IRepository>> getUserRepositoriesImpl(final String login)
     {
         Pager p = pagerRepos.get(login);
         if (p == null)
             pagerRepos.put(login, p = new Pager());
 
+        final List<IRepository> cacheBuffer = new ArrayList<>();
         final Pager pager = p;
+
         return GitHubService.getInstance().getRepositoriesApi()
             .getUserRepositories(login, GitHubRepositoriesApi.TYPE_DEFAULT, GitHubRepositoriesApi.SORT_UPDATED, GitHubRepositoriesApi.DIRECTION_DESC, pager.page, GitHubRepositoriesApi.PAGE_SIZE_MAX)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
-            .doOnNext(repos ->
-            {
-                List<IRepository> cache = repoMemCache.get(login);
-                if(cache == null)
-                    repoMemCache.put(login, cache = new ArrayList<>());
-                cache.addAll(repos);
-            })
+            .doOnNext(repos -> cacheBuffer.addAll(repos))
             .concatMap((Function<List<GitHubRepository>, ObservableSource<List<IRepository>>>) repos ->
             {
                 List<IRepository> ret = new ArrayList<>();
@@ -149,13 +137,19 @@ public class GitHubServiceProvider implements IServiceProvider
                 if(ret.size() < GitHubRepositoriesApi.PAGE_SIZE_MAX)
                 {
                     pager.clear();
+
+                    List<IRepository> cache = repoMemCache.get(login);
+                    if (cache == null)
+                        repoMemCache.put(login, cache = new ArrayList<>());
+                    cache.addAll(cacheBuffer);
+
                     return Observable.just(ret);
                 }
                 else
                     pager.page++;
 
                 return Observable.just(ret)
-                    .concatWith(getUserRepositories(login));
+                    .concatWith(getUserRepositoriesImpl(login));
             });
     }
 }

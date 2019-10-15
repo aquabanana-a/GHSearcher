@@ -203,7 +203,6 @@ public class FgUser extends FgBase
                 @Override
                 public void onNext(List<IRepository> values)
                 {
-
                     if (values.size() == 0)
                         ViewUtil.toVisible(tvEmpty);
 
