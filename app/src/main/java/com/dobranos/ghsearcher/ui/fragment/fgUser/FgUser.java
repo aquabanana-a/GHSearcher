@@ -197,14 +197,24 @@ public class FgUser extends FgBase
         getServiceProvider().getUserRepositories(userLogin)
             .subscribeWith(new Observer<List<IRepository>>()
             {
+                Boolean empty;
+
                 @Override public void onSubscribe(Disposable d) { behavior.showLoading(true); }
-                @Override public void onComplete() { behavior.showLoading(false); }
+                @Override public void onComplete()
+                {
+                    behavior.showLoading(false);
+
+                    if (empty == null || empty)
+                        ViewUtil.toVisible(tvEmpty);
+                    else
+                        ViewUtil.toGone(tvEmpty);
+                }
 
                 @Override
                 public void onNext(List<IRepository> values)
                 {
-                    if (values.size() == 0)
-                        ViewUtil.toVisible(tvEmpty);
+                    if (empty == null)
+                        empty = values.size() == 0;
 
                     recyclerViewAdapter.addData(values);
                 }

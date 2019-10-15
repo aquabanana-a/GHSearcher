@@ -185,16 +185,24 @@ public class FgSearchResults extends FgBase
         getServiceProvider().searchUsers(searchQuery, page++, 100)
             .subscribeWith(new Observer<List<IUser>>()
             {
+                Boolean empty;
+
                 @Override public void onSubscribe(Disposable d) { behavior.showLoading(true); }
-                @Override public void onComplete() { behavior.showLoading(false); }
+                @Override public void onComplete()
+                {
+                    behavior.showLoading(false);
+
+                    if (empty == null || empty)
+                        ViewUtil.toVisible(tvEmpty);
+                    else
+                        ViewUtil.toGone(tvEmpty);
+                }
 
                 @Override
                 public void onNext(List<IUser> users)
                 {
-                    if (users.size() == 0)
-                        ViewUtil.toVisible(tvEmpty);
-                    else
-                        ViewUtil.toGone(tvEmpty);
+                    if(empty == null)
+                        empty = users.size() == 0;
 
                     recyclerViewAdapter.addData(users);
                 }
